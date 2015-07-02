@@ -27,3 +27,6 @@
 *.out
 *.app
 *.lyx~
+/QtVoorBeginners/Pygmentize/
+*.lyx#
+*.pro.user
