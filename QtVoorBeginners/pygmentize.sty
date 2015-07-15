@@ -1,0 +1,26 @@
+%%% Author: Shrey banga
+%%% Use Pygments for syntax highlighting source code
+%%% requires --enable-pipes and "pygmentize" to be a valid command
+%%% e.g. usage \pygmentize {source.py}
+\ProvidesPackage{pygmentize}
+\usepackage{fancyvrb}
+\usepackage{color}
+% \usepackage[latin1]{inputenc}
+
+%%% Any other options in the package are passed to command line
+\newcommand \pygopts{}
+\DeclareOption{linenos} { \expandafter\def\expandafter\pygopts\expandafter{\pygopts -P linenos=True } }
+\DeclareOption{mathescape} { \expandafter\def\expandafter\pygopts\expandafter{\pygopts -P mathescape=True } }
+
+% Theme's style defs are loaded by a python script
+% The script basically calls print(LatexFormatter(style=theme).get_style_defs()) 
+\DeclareOption* { \input "|pygmentize-styledefs.py \CurrentOption" }
+
+\ProcessOptions\relax
+
+\def \cmdline{|pygmentize -f tex }
+
+\newcommand{\pygmentize}[2][]{
+  \input "\cmdline -P "verboptions=#1" \pygopts #2"
+  %\typeout{"\cmdline -P "verboptions=#1" \pygopts #2"}
+}

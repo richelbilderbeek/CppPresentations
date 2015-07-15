@@ -2,7 +2,7 @@
 \lyxformat 474
 \begin_document
 \begin_header
-\textclass article
+\textclass book
 \begin_preamble
 \usepackage{pygmentize}
 \end_preamble
@@ -85,19 +85,6 @@ Voorwoord
 \end_layout
 
 \begin_layout Standard
-\begin_inset Note Note
-status open
-
-\begin_layout Plain Layout
-sudo apt-get install python-pygments
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_layout Standard
 C++
 \end_layout
 
@@ -110,14 +97,129 @@ Hello World
 \end_layout
 
 \begin_layout Standard
-Leeg
+Start Qt Creator.
+ Dan zie je het eerste scherm (zie figuur 
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "fig:Eerste-scherm"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status collapsed
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename BeginschermMetNieuwProject.png
+	lyxscale 50
+	width 50text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Eerste scherm
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:Eerste-scherm"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Klik op 'New Project' om een nieuw
+\end_layout
+
+\begin_layout Standard
+\begin_inset Float figure
+placement H
+wide false
+sideways false
+status open
+
+\begin_layout Plain Layout
+\begin_inset Graphics
+	filename NewProject.png
+	lyxscale 50
+	width 50text%
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Plain Layout
+\begin_inset Caption Standard
+
+\begin_layout Plain Layout
+Eerste scherm
+\begin_inset CommandInset label
+LatexCommand label
+name "fig:NewProject"
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Zie listing
 \end_layout
 
 \begin_layout Standard
 \begin_inset CommandInset include
 LatexCommand lstinputlisting
 filename "LeegQtProject/dialog.h"
-lstparams "caption={dialog.h}"
+lstparams "breaklines=true,captionpos=b,frame=tblr,language={C++},caption={dialog.h}"
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset CommandInset include
+LatexCommand lstinputlisting
+filename "LeegQtProject/dialog.cpp"
+lstparams "breaklines=true,captionpos=b,frame=tblr,language={C++},caption={dialog.cpp}"
 
 \end_inset
 
