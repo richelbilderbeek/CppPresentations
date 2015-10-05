@@ -213,6 +213,24 @@ std::ostream& operator<<(
 );
 ```
 
+# I.10
+
+```
+//Returns the error code:
+// 0: success
+// 1: error
+int display_temperature(const double kelvin) noexcept;
+```
+
+# I.10
+
+```
+//Throws std::logic_error if kelvin < 0.0
+void display_temperature(const double kelvin);
+```
+
+ * I.10: Use exceptions to signal a failure to perform a required task
+
 # F.41 multiple out parameters
 
 ```
@@ -257,7 +275,7 @@ T const& b(); //Dangerous, but assume correct
  * C++98: Yes, as its helps catch errors
  * C++11: No, as it hinders rvalue optimalization
 
-# `const T` return type in C++98 1/1
+# `const T` return type in C++98 1/2
 
 ```
 struct Int {
@@ -315,6 +333,7 @@ bool is_prime(const int x) noexcept;
 # F.6: need noexcept?
 
  * F.6: If your function may not throw, declare it noexcept
+ * `noexcept` is most useful for frequently used, low-level functions.
  * When in doubt: do not mark it `noexcept` (RJCB)
 
 ```
@@ -344,6 +363,112 @@ constexpr int factorial(const int n) noexcept;
  * A `constexpr` can have no side-effects
  * A `constexpr` can only call `constexpr` functions
  * Still limited in C++11
+
+# I.4
+
+```
+void draw_rect(int, int, int, int);
+draw_rect(p.x, p.y, 10, 20);
+```
+
+# I.4
+
+```
+void draw_rectangle(Point top_left, Point bottom_right);
+void draw_rectangle(Point top_left, Size height_width);
+
+// two corners
+draw_rectangle(p, Point{10, 20});  
+
+// one corner and a (height, width) pair
+draw_rectangle(p, Size{10, 20}); 
+```
+
+ * I.4: Make interfaces precisely and strongly typed
+ * Scott Meyers. Effective C++ (3rd edition). ISBN: 0-321-33487-6. Item 18: Make interfaces easy to use correctly and hard to use incorrectly.
+
+# I.4
+
+```
+void blink_led(int time_to_blink) {
+  // do something with time_to_blink
+}
+
+void use() {
+  blink_led(2);
+}
+```
+
+# I.4
+
+```
+using Duration 
+  = std::chrono::duration<double>;
+
+void blink_led(const Duration time_to_blink) {
+  // do something with time_to_blink
+}
+
+void use() {
+  blink_led(std::chrono::milliseconds(1500));
+}
+```
+
+ * I.4: Make interfaces precisely and strongly typed
+ * Scott Meyers. Effective C++ (3rd edition). ISBN: 0-321-33487-6. Item 18: Make interfaces easy to use correctly and hard to use incorrectly.
+
+
+# F.1
+
+```
+// Set a value in a y-x-ordered 2D-vector
+void checked_set_value(
+  std::vector<std::vector<int>>& v, 
+  const int y, 
+  const int x, 
+  const double value
+);
+```
+
+# F.1
+
+```
+// Set a value in a y-x-ordered 2D-vector
+void checked_set_value(
+  std::vector<std::vector<int>>& v, 
+  const int x, 
+  const int y, 
+  const double value
+);
+```
+
+ * People expect to first supply an x.
+ * F.1: "Package" meaningful operations as carefully named functions
+
+
+# F.1
+
+```
+// Assign a color to a certain 
+// square on a Rubiks' cube
+void SetSquare(
+  const Square& s, 
+  const Color& c, 
+  RubiksCube& c
+);
+```
+
+# F.1
+
+```
+void Turn(
+  const Position& p, 
+  const Direction& d, 
+  RubiksCube& c
+) noexcept;
+```
+
+ * Scott Meyers. Effective C++ (3rd edition). ISBN: 0-321-33487-6. Item 18: Make interfaces easy to use correctly and hard to use incorrectly.
 
 # When to use `void main`
 
@@ -376,11 +501,9 @@ is not and never has been C++, nor has it even been C.
 
 # Legal stuff
 
-Copyright by Richel Bilderbeek, 2015
-
 ![CC-BY-NC-SA](CC-BY-NC-SA.png "")
 
-Download at :
+Download at:
 
 ```
 www.github.com/richelbilderbeek/
@@ -388,3 +511,5 @@ www.github.com/richelbilderbeek/
 ```
 
 ![GitHub](GitHub_logo_2013.png "")
+
+Send feedback by adding an issue or doing a pull request.
