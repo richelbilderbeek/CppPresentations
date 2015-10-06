@@ -3,11 +3,14 @@
 
 # Functions
 
- * general
- * return type
- * name
- * arguments
- * modifiers: constexpt, inline, noexcept
+ * Rules, rules, rules:
+   * general
+   * return type
+   * name
+   * arguments
+   * modifiers: constexpt, inline, noexcept
+ * Applying these
+   * 9 implementations of `divide`
 
 ```
 inline constexpr double pi() noexcept;
@@ -256,21 +259,14 @@ std::tuple<double,double> e(const V& v);
 
 # When to use a const return type?
 
+ * Assume T is small
+
 ```
 const T a();
-const T& b(); //Dangerous, but assume correct
-T const& c(); //Dangerous, but assume correct
+      T b();
 ```
 
 # When to use a const return type?
-
-```
-const T a();
-const T& b(); //Dangerous, but assume correct
-T const& b(); //Dangerous, but assume correct
-```
-
-# `const T` return type?
 
  * C++98: Yes, as its helps catch errors
  * C++11: No, as it hinders rvalue optimalization
@@ -469,37 +465,6 @@ void Turn(
 ```
 
  * Scott Meyers. Effective C++ (3rd edition). ISBN: 0-321-33487-6. Item 18: Make interfaces easy to use correctly and hard to use incorrectly.
-
-# When to use `void main`
-
-```
-void main() {
-  //Does not return anything,
-  //thus void is ok
-}
-```
-
-# When to use `void main`
-
-Never use `void main`, use `int main` instead
-
-```
-int main() { /* Implicitly returns zero */ }
-```
-
- * Herb Sutter. Exceptional C++. ISBN:0-201-61562-2. Item 21: void main() is nonstandard and nonportable.
- * Bjarne Stroustrup's homepage (http://www.research.att.com/~bs/bs_faq2.html#void-main):
-```
-The definition
-void main() { /* ... */ }
-is not and never has been C++, nor has it even been C.
-```
-
-# Never use `void main`
-
-From the The alt.comp.lang.learn.c-c++ FAQ: http://ma.rtij.nl/acllc-c++.FAQ.html#q3.4: 3.4: Why does everyone make so much fuss about "void main()"?:
- 
-Because the return type of the main() function must be int in both C and C++. Anything else is undefined. Bottom line - don't try to start a thread about this in alt.comp.lang.learn.c-c++ as it has already been discussed many, many times and generates more flamage than any other topic.
 
 # Divide
 
