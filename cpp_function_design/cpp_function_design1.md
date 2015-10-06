@@ -495,6 +495,148 @@ void main() { /* ... */ }
 is not and never has been C++, nor has it even been C.
 ```
 
+# Never use `void main`
+
+From the The alt.comp.lang.learn.c-c++ FAQ: http://ma.rtij.nl/acllc-c++.FAQ.html#q3.4: 3.4: Why does everyone make so much fuss about "void main()"?:
+ 
+Because the return type of the main() function must be int in both C and C++. Anything else is undefined. Bottom line - don't try to start a thread about this in alt.comp.lang.learn.c-c++ as it has already been discussed many, many times and generates more flamage than any other topic.
+
+# Divide
+
+ * How many are incorrect?
+
+```
+// n: numerator
+// d: denominator
+// [args]: const double n, const double d
+double divide_a([args]); 
+double divide_b([args]) noexcept;
+std::vector<double> divide_c([args]); 
+std::vector<double> divide_d([args]) noexcept;
+std::vector<double>& divide_e([args]) noexcept;
+std::tuple<bool,double> divide_f([args]); 
+std::tuple<bool,double> divide_g([args]) noexcept; 
+std::unique_ptr<double> divide_h([args]); 
+std::unique_ptr<double> divide_i([args]) noexcept; 
+```
+
+# divide_a
+
+```
+double 
+divide_a(const double n, const double d) {
+  if (d == 0.0) 
+    throw std::logic_error(
+      "Cannot divide by zero"
+    );
+  return n/d;
+}
+```
+
+# divide_b
+
+```
+double 
+divide_b(const double n, const double d) noexcept {
+  assert(d != 0.0);
+  return n/d;
+}
+```
+
+# divide_c
+
+```
+std::vector<double> 
+divide_c(const double n, const double d) {
+  if (d == 0.0)
+    return std::vector<double>();
+  return { n / d };
+}
+```
+
+# divide_d
+
+ * Cannot guarantee a noexcept here
+
+```
+std::vector<double> 
+divide_d(const double n, const double d) noexcept {
+  if (d == 0.0)
+    return std::vector<double>();
+  return { n / d }; //May throw here
+}
+```
+
+# divide_e
+
+```
+std::vector<double>& 
+divide_e(const double n, const double d) noexcept {
+  static std::vector<double> no_result;
+  static std::vector<double> result(1,0.0);
+  if (d == 0.0)
+    return no_result;
+  result[0] = n / d;
+  return result;
+}
+```
+
+# divide_f
+
+ * Can be guaranteed not to throw, see `divide_g`
+
+```
+std::tuple<bool,double> 
+divide_f(const double n, const double d); 
+```
+
+# divide_g
+
+```
+std::tuple<bool,double> 
+divide_g(const double n, const double d) noexcept {
+  if (d == 0.0)
+    return std::make_tuple(false,0.0);
+  return std::make_tuple(true, n / d);
+}
+```
+
+# divide_h
+
+```
+std::unique_ptr<double> 
+divide_h(const double n, const double d) {
+  if (d == 0.0)
+    return nullptr;
+  return std::make_unique<double>(n / d); //May throw
+}
+```
+
+# divide_i
+
+```
+auto no_del() { return  [](double *) { ; }; }
+
+using Ptr = std::unique_ptr<double, decltype(no_del())>;
+
+Ptr divide_i(const double n, const double d) noexcept {
+  static double result{0.0};
+  if (d == 0.0) {
+    Ptr p(nullptr,no_del());
+    return p;
+  }
+  result = n / d;
+  Ptr p(&result,no_del());
+  return p;
+}
+
+```
+
+# Conclusion
+
+ * There are many rules to design a function
+ * The prototype of a function tells you a lot about the implementation
+
 # More function design
 
  * Function design 2: `T*` and its cousins
