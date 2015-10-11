@@ -614,7 +614,7 @@ Download at:
 
 ```
 www.github.com/richelbilderbeek/
-  CppPresentations/cpp_function_design1.pdf
+  CppPresentations/function_design1.pdf
 ```
 
 ![GitHub](GitHub_logo_2013.png "")
