@@ -85,13 +85,13 @@ void draw(point from, size sz);
  * What would the rule be?
 
 ```
-struct Coordinat {
+struct Coordinat { //struct here
   double x;
   double y;
   std::string label;
 };
 
-class Date {
+class Date { //class here
 public:
   Date(Year y, Month m, Day d);
 private:
@@ -233,7 +233,7 @@ class point1 {
 class point2 {
   int x, y;
   // ... operations, some virtual ...
-  virtual ~Point2();
+  virtual ~point2();
 };
 ```
 
@@ -262,8 +262,8 @@ private:
 }
 
 int main() {
-  person a;
-  person b = a;
+  const person a;
+  const person b = a;
   assert(a != b);
 }
 ```
@@ -271,8 +271,8 @@ int main() {
 # C.11
 
 ```
-my_class a;
-my_class = a;
+const my_class a;
+const my_class b = a;
 assert(a == b);
 ```
 
