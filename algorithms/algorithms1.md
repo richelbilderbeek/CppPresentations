@@ -13,8 +13,7 @@
  * Less error prone
  * Can call these locally (although syntax is sometimes cumbersome)
  * (run-time speed) 
-
- * IMHO: sometimes prefer a ranged-for loop for readability
+ * Prefer algorithms over raw for-loops [Bjarne Stroustrup. The C++ Programming Language (3rd edition). Chapter 18.12.1][Scott Meyers. Effective STL. Item 43]
 
 # Example 0: for-loops
 
@@ -32,8 +31,8 @@ void f(std::vector<T>& v)
 # Example 0: algorithm
 
 ```
-template <class T>
-void f(std::vector<T>& v)
+template <class C>
+void f(C& v)
 {
   std::for_each(
     std::begin(v),
@@ -43,19 +42,22 @@ void f(std::vector<T>& v)
 }
 ```
 
- * Simply removed the for loop
- * Prefer algorithms over raw for-loops [Bjarne Stroustrup. The C++ Programming Language (3rd edition). Chapter 18.12.1][Scott Meyers. Effective STL. Item 43]
+ * Delegated the for loop to `for_each`
+ * Can be written and tweaked locally
+ * More extensible: can also use `f` for other containers
+ * Probably faster (confirmed by my benchmark)
 
 # Example 0: ranged for
 
 ```
-template <class T>
-void f(std::vector<T>& v)
+template <class C>
+void f(C& v)
 {
   for (auto& i: v) ++i;
 }
 ```
 
+ * As local and tweakable
  * May be a case pro a ranged for?
  * No clear coding standards on this
 
@@ -93,12 +95,30 @@ void f(std::vector<T>& v)
 
  * Quicksort, average complexity O(n*log(n))
 
+# Example 1: algorithm
+
+ * Can sort with a custom `operator<` supplied as a lambda expression
+
+```
+void f(std::vector<std::string>& v)
+{
+  std::sort(
+    std::begin(v),
+    std::end(v),
+    [](const auto& lhs, const auto& rhs) {
+      return lhs.size() < rhs.size()
+    }
+  );
+}
+```
 
 # Example 1: conclusions
 
  * std::sort is more expressive
  * std::sort is implemented smarter
  * No need to write a sort function, can do it locally
+ * Can sort in any way
+ * There are multiple sort algorithms in the STL, e.g. `std::stable_sort`, `std::partial_sort`, `std::nth_element`
 
 # Example 2: raw for
 
@@ -133,26 +153,27 @@ void f(C& v, const D& w)
 }
 ```
 
-# Example 2: conclusions
+ * Overwrites `v`
 
- * std::copy is more expressive
- * (std::copy is implemented faster)
- * No need to write a copy function, can do it locally
-
-# Example 3: raw for
+# Example 2: algorithm that appends
 
 ```
-template <class C>
-void f(const C& v) 
+template <class T, class D>
+void f(std::vector<T>& v, const D& w) 
 {
-  const int sz{static_cast<int>(v.size())};
-  for (int i=0; i!=sz; ++i) {
-    std::cout << w[i] << '\n';
-  }
+  std::copy(
+    std::begin(w),
+    std::end(w),
+    std::back_inserter(v)
+  );
 }
 ```
 
-# Example 3: algorithm
+ * Appends to `v` using `push_back`
+ * Use `inserter` to call `insert`
+ * To transform the values, use `std::transform`
+
+# Example 2: algorithm that copies to stream
 
 ```
 template <class C>
@@ -168,62 +189,11 @@ void f(const C& v)
 }
 ```
 
-# Example 3: ranged for
+# Example 2: predicate
 
 ```
-template <class C>
-void f(const C& v) 
-{
-  for (const auto& i:v) {
-    std::cout << i << '\n';
-  }
-}
-```
-
-# Example 3: conclusions
-
- * May be a case pro ranged for?
- * Use of std::ostream_iterator is a bit cumbersome (have not checked if C++14 has fixed this)
- * Algorithm call can be writtem locally
-
-# Example 4: raw for loop
-
-```
-template <class C, class D>
-void f(C& v, const D& w) 
-{
-  const int sz{static_cast<int>(w.size())};
-  for (int i=0; i!=sz; ++i) {
-    if (w[i] > 0) {  
-      v.push_back(w[i]);
-    }
-  }
-}
-```
-
-. . . 
-
- * A predicated copy 
-
-# Example 4: ranged for-loop
-
-```
-template <class C, class D>
-void f(C& v, const D& w) 
-{
-  for (const auto& i: w) { 
-    if (i > 0) { 
-      v.push_back(i); 
-    }
-  )
-}
-```
-
-# Example 4: algorithm
-
-```
-template <class C, class D>
-void f(C& v, const D& w) 
+template <class T, class D>
+void f(std::vector<T>& v, const D& w) 
 {
   std::copy_if(
     std::begin(w),
@@ -234,12 +204,12 @@ void f(C& v, const D& w)
 }
 ```
 
-# Example 4: conclusion
+# Example 2: conclusion
 
- * `std::back_inserter` can do `push_back`
- * Lambda expression is short (note: from C++14)
- * Can do algorithm locally and tweak it there
-
+ * More expressive
+ * Can be written and tweaked locally
+ * Can use different inserters
+ * Can use different predicates
 
 # How algorithms work
 
@@ -263,23 +233,47 @@ std::sort( //C++11
 );
 ```
 
-# Reversed ranges
-
-```
-std::sort( //C++98
-  v.rbegin(),
-  v.rend()
-);
-```
-
 ```
 std::sort( //C++11
-  std::rbegin(v),
-  std::rend(std::sort)
+  std::begin(v),
+  std::begin(v) + (v.size() / 2)
 );
 ```
 
-# Overview of algorithms
+ * Prefer using `std::begin(v)` over `v.begin()`
+
+# Iterators cannot modify containers
+
+ * 'An algorithm operates on its data through iterators and knows nothing about the container in which the elements are stored' [Stroustrup]
+
+ * This code will not change the size of the container:
+
+```
+std::remove(
+  std::begin(v),
+  std::end(v),
+  7
+);
+```
+
+# Iterators cannot modify containers
+
+ * This code will rearrange the container its contents
+ * std::remove will return an iterator to the new end
+
+```
+const auto new_end = std::remove(
+  std::begin(v),
+  std::end(v),
+  7
+);
+
+v.erase(new_end,std::end(v));
+```
+
+ * This is called the erase-remove idiom
+
+# Some more examples
 
 # std::all_of, std::any_of, std::none_of
 
@@ -312,7 +306,7 @@ std::count_if(
 # std::find
 
  * A big family: `std::find`, `std::find_if`, `std::find_if_not`, `std::find_first_of`, `std::adjacent_find`, `std::find_end`
- * All return an iterator
+ * All return an iterator to either within the container (where the element is found) or beyond the container (did not find it)
 
 ```
 const auto iter = std::find_if(
@@ -346,15 +340,62 @@ assert(*iter == 3);
 
 # std::iota 
 
- * Sets increasing values
+ * Sets increasing values, starting at a certain value
 
 ```
-const int sz{static_cast<int>(v.size()};
-for (int i=0; i!=sz; ++i) { v[i] = i; }
+std::vector<int> v(3);
+std::iota(std::begin(v),std::end(v),42);
+// v will be {42,43,44}
 ```
 
+# std::min_element
+
+ * Returns an iterator to the lowest element
+
 ```
-std::iota(std::begin(v),std::end(v),0);
+std::vector<int> v;
+
+const int lowest 
+  = *std::min_element(
+    std::begin(v),
+    std::end(v)
+  );
+```
+
+ * Can have custom `operator<`
+ * There is also `std::max_element`
+
+# std::accumulate
+
+ * To calculate a sum
+
+```
+const int sum
+  = std::accumulate(
+    std::begin(v),
+    std::end(v),
+    0, // '0' is the initial value
+    [](const int sum, const MyClass& my_class) {
+      return sum + my_class.get();
+    }
+  );
+```
+
+
+# std::transform
+
+ * To transform one range (in)to another
+ * Very flexible
+
+```
+std::set<int> v;
+std::vector<double> w;
+
+std::transform(
+  std::begin(v),std::end(v),
+  std::back_inserter(w),
+  [](const int i) { return 1.0 / static_cast<double>(i); }
+);
 ```
 
 # Extensions
@@ -369,26 +410,16 @@ void sort(C& v)
 }
 ```
 
+ * Not known if/when these very common extensions will enter the STL
+
 # Conclusion
 
  * Algorithms allow a higher expressiveness of code (due to removal of for loops)
  * Some algorithms have an `_if` or predicated version
  * Lambda function allow for in-place functions
-
-# And ...
-
- * There are many more algorithms, here a list of my favorites I left out:
-
- * accumulate: sum up a range of elements
- * min_element: returns the smallest element in a range
- * max_element: returns the largest element in a range
- * remove: remove elements equal to certain value
- * remove_if: remove all elements for which a predicate is true
- * replace: replace every occurrence of some value in a range with another value
- * replace_if: change the values of elements for which a predicate is true
- * shuffle: shuffles the elements randomly
- * transform: applies a function to a range of elements
- * unique: remove consecutive duplicate elements in a range
+ * (Code will probably be faster)
+ * There are many more algorithms, especially find, sort and set algorithms
+ * You can assume others know the STL algorithms
 
 # Legal stuff
 
