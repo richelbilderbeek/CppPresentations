@@ -242,6 +242,26 @@ std::sort( //C++11
 
  * Prefer using `std::begin(v)` over `v.begin()`
 
+# Which algorithms?
+
+ * 'An algorithm operates on its data through iterators and knows nothing about the container in which the elements are stored' [Stroustrup]
+
+```
+std::set<int> s;
+assert(s.count(42)==0);
+```
+
+```
+std::set<int> s;
+assert(std::count(
+    std::begin(s),std::end(s),42
+  ) == 0
+);
+```
+
+ * Prefer using the member function over the algorithm with the same name
+ * Unsure about current best practice (`std::count` can call `std::set<T>::count`)
+
 # Iterators cannot modify containers
 
  * 'An algorithm operates on its data through iterators and knows nothing about the container in which the elements are stored' [Stroustrup]
