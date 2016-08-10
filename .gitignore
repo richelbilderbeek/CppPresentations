@@ -30,3 +30,4 @@
 /QtVoorBeginners/Pygmentize/
 *.lyx#
 *.pro.user
+BoostTest/build-adder_test-Desktop-Debug/*.*

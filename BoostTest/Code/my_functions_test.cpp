@@ -31,15 +31,8 @@ BOOST_AUTO_TEST_CASE(divide_use)
 
 BOOST_AUTO_TEST_CASE(divide_abuse)
 {
-  try
-  {
-    divide(0.0, 0.0);
-    BOOST_CHECK(!"Should not get here");
-  }
-  catch (std::invalid_argument& e)
-  {
-    const std::string expected = "divide: denominator cannot be zero";
-    BOOST_CHECK(e.what() == expected);
-
-  }
+  BOOST_CHECK_THROW(
+    divide(0.0, 0.0),
+    std::invalid_argument
+  );
 }
